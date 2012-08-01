@@ -13,6 +13,7 @@ int motorDireitoPin2 = 6;
 
 int motorEsquerdoPin1 = 9;
 int motorEsquerdoPin2 = 10;
+int ldrEsquerdo = 0;
 
 Ultrasonic distancia(12,13);
 
@@ -34,6 +35,14 @@ void setup() {
 
 void loop() {
   int dist = ultrasonico();
+  
+  if (analogRead(ldr) < 250) {
+    roboRe();
+    delay(1200);
+    roboDireita();
+    delay(250);
+    roboFrente();
+  }
   
   if (digitalRead(botaoDireita) == HIGH) {
     roboRe();
