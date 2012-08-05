@@ -3,22 +3,22 @@
 #define echoPin 13
 #define trigPin 12
 
-const int botaoEsquerda = 2;
-const int botaoDireita = 4;
-
-int estado = 0;
+const int botaoEsquerda = 4;
+const int botaoDireita = 2;
 
 int motorDireitoPin1 = 5;
 int motorDireitoPin2 = 6;
 
 int motorEsquerdoPin1 = 9;
 int motorEsquerdoPin2 = 10;
-int ldrEsquerdo = 0;
+
+int ldr = 0;
+
+int luminosity = 900;
 
 Ultrasonic distancia(12,13);
 
 void setup() {
-  //iniciar_Motor();
   Serial.begin(9600);
   pinMode(echoPin, INPUT);
   pinMode(trigPin, OUTPUT);
@@ -36,14 +36,6 @@ void setup() {
 void loop() {
   int dist = ultrasonico();
   
-  if (analogRead(ldr) < 250) {
-    roboRe();
-    delay(1200);
-    roboDireita();
-    delay(250);
-    roboFrente();
-  }
-  
   if (digitalRead(botaoDireita) == HIGH) {
     roboRe();
     delay(600);
@@ -59,6 +51,17 @@ void loop() {
     delay(200);
     roboFrente();
   } 
+
+  if (analogRead(ldr) > luminosity) {
+    while(analogRead(ldr) > luminosity) {
+      roboRe();
+    }
+    delay(200);
+    roboReDireita();
+    delay(250);
+    roboFrente();
+  }
+
   
   if (dist < 15 && dist != 0) {
     roboRe();
