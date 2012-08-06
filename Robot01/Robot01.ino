@@ -3,8 +3,8 @@
 #define echoPin 13
 #define trigPin 12
 
-const int botaoEsquerda = 4;
-const int botaoDireita = 2;
+const int botaoEsquerda = 8;
+const int botaoDireita = 4;
 
 int motorDireitoPin1 = 5;
 int motorDireitoPin2 = 6;
@@ -13,8 +13,6 @@ int motorEsquerdoPin1 = 9;
 int motorEsquerdoPin2 = 10;
 
 int ldr = 0;
-
-int luminosity = 900;
 
 Ultrasonic distancia(12,13);
 
@@ -34,26 +32,29 @@ void setup() {
 }
 
 void loop() {
-  int dist = ultrasonico();
-  
+ 
   if (digitalRead(botaoDireita) == HIGH) {
-    roboRe();
-    delay(600);
-    roboReDireita();
-    delay(200);
-    roboFrente();
-  }
-  
-  if (digitalRead(botaoEsquerda) == HIGH) {
+    Serial.println("Colisao laterial Direita");
     roboRe();
     delay(600);
     roboReEsquerda();
     delay(200);
     roboFrente();
+  }
+  
+  if (digitalRead(botaoEsquerda) == HIGH) {
+    Serial.println("Colisao laterial Esquerda");
+    roboRe();
+    delay(600);
+    roboReDireita();
+    delay(200);
+    roboFrente();
   } 
 
-  if (analogRead(ldr) > luminosity) {
-    while(analogRead(ldr) > luminosity) {
+  if (leLuminosidade() > 900) {
+    Serial.println("Luninosidade baixa detectada");
+    while(leLuminosidade() > 900) {
+      Serial.println("Afastando do escuro...");
       roboRe();
     }
     delay(200);
@@ -62,8 +63,9 @@ void loop() {
     roboFrente();
   }
 
-  
+  int dist = leDistancia();
   if (dist < 15 && dist != 0) {
+    Serial.println("Obstaculo detectado");
     roboRe();
     delay(600);
     roboReEsquerda();
@@ -72,10 +74,16 @@ void loop() {
   } else {
     roboFrente();
   }
-  
 }
-  
-int ultrasonico() {
+
+int leLuminosidade() {
+  int lum = analogRead(ldr);
+  //Serial.print("Luminosidade: ");
+  //Serial.println(lum);
+  return lum;
+}
+
+int leDistancia() {
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
   
@@ -84,8 +92,8 @@ int ultrasonico() {
   
   digitalWrite(trigPin, LOW);
   int cm = (distancia.Ranging(CM));
-  Serial.print("Distancia em CM: ");
-  Serial.println(cm);
+  //Serial.print("Distancia em CM: ");
+  //Serial.println(cm);
   return cm;
 }
 
