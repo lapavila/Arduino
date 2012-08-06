@@ -36,50 +36,40 @@ void loop() {
   if (digitalRead(botaoDireita) == HIGH) {
     Serial.println("Colisao laterial Direita");
     roboRe();
-    delay(600);
+    delay(500);
     roboReEsquerda();
-    delay(200);
+    delay(125);
     roboFrente();
   }
   
   if (digitalRead(botaoEsquerda) == HIGH) {
     Serial.println("Colisao laterial Esquerda");
     roboRe();
-    delay(600);
+    delay(500);
     roboReDireita();
-    delay(200);
+    delay(125);
     roboFrente();
   } 
 
-<<<<<<< HEAD
   if (leLuminosidade() > 900) {
     Serial.println("Luninosidade baixa detectada");
     while(leLuminosidade() > 900) {
       Serial.println("Afastando do escuro...");
-=======
-  int luminosity = leLuminosidade();
-  if (luminosity > 900) {
-    while(luminosity > 900) {
->>>>>>> t
       roboRe();
     }
-    delay(200);
+    delay(125);
     roboReDireita();
     delay(250);
     roboFrente();
   }
 
   int dist = leDistancia();
-<<<<<<< HEAD
-=======
-  
->>>>>>> t
   if (dist < 15 && dist != 0) {
     Serial.println("Obstaculo detectado");
     roboRe();
-    delay(600);
+    delay(500);
     roboReEsquerda();
-    delay(250);
+    delay(150);
     roboFrente();
   } else {
     roboFrente();
@@ -87,19 +77,12 @@ void loop() {
 }
 
 int leLuminosidade() {
-<<<<<<< HEAD
   int lum = analogRead(ldr);
   //Serial.print("Luminosidade: ");
   //Serial.println(lum);
   return lum;
 }
-
-=======
-  int luminosity = analogRead(ldr);
-  Serial.println("Luminosidade: " + luminosity);
-}
   
->>>>>>> t
 int leDistancia() {
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
@@ -109,12 +92,8 @@ int leDistancia() {
   
   digitalWrite(trigPin, LOW);
   int cm = (distancia.Ranging(CM));
-<<<<<<< HEAD
   //Serial.print("Distancia em CM: ");
   //Serial.println(cm);
-=======
-  Serial.println("Distancia em CM: " + cm);
->>>>>>> t
   return cm;
 }
 
