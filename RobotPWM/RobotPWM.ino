@@ -13,6 +13,8 @@ int motorEsquerdoPin1 = 9;
 int motorEsquerdoPin2 = 10;
 
 int ldr = 0;
+int theBegin = true;
+int velocityFactor = 200;
 
 Ultrasonic distancia(12,13);
 
@@ -32,6 +34,10 @@ void setup() {
 }
 
 void loop() {
+  if (theBegin) {
+    roboFrente();
+    theBegin = false;
+  }
  
   if (digitalRead(botaoDireita) == HIGH) {
     Serial.println("Colisao laterial Direita");
@@ -69,8 +75,6 @@ void loop() {
     }
     roboReEsquerda();
     delay(100);
-    roboFrente();
-  } else {
     roboFrente();
   }
 }
@@ -128,21 +132,21 @@ void roboParado() {
 
 void motorDireitoFrente() {
   digitalWrite(motorDireitoPin1, 0);
-  digitalWrite(motorDireitoPin2, 1);
+  analogWrite(motorDireitoPin2, velocityFactor);
 }
 
 void motorEsquerdoFrente() {
   digitalWrite(motorEsquerdoPin1, 0);
-  digitalWrite(motorEsquerdoPin2, 1);
+  analogWrite(motorEsquerdoPin2, velocityFactor);
 }
 
 void motorDireitoRe() {
-  digitalWrite(motorDireitoPin1, 1);
+  analogWrite(motorDireitoPin1, velocityFactor);
   digitalWrite(motorDireitoPin2, 0);
 }
 
 void motorEsquerdoRe() {
-  digitalWrite(motorEsquerdoPin1, 1);
+  analogWrite(motorEsquerdoPin1, velocityFactor);
   digitalWrite(motorEsquerdoPin2, 0);
 }
 
