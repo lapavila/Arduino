@@ -3,8 +3,8 @@
 #define echoPin 13
 #define trigPin 12
 
-const int botaoEsquerda = 8;
-const int botaoDireita = 4;
+const int botaoEsquerda = 4;
+const int botaoDireita = 2;
 
 int motorDireitoPin1 = 5;
 int motorDireitoPin2 = 6;
@@ -14,9 +14,10 @@ int motorEsquerdoPin2 = 10;
 
 int ldr = 0;
 int theBegin = true;
-int velocityFactor = 200;
+int velocityFactorLeft = 160;
+int velocityFactorRight = 200;
 
-Ultrasonic distancia(12,13);
+Ultrasonic distancia(12, 13);
 
 void setup() {
   Serial.begin(9600);
@@ -132,21 +133,21 @@ void roboParado() {
 
 void motorDireitoFrente() {
   digitalWrite(motorDireitoPin1, 0);
-  analogWrite(motorDireitoPin2, velocityFactor);
+  analogWrite(motorDireitoPin2, velocityFactorRight);
 }
 
 void motorEsquerdoFrente() {
   digitalWrite(motorEsquerdoPin1, 0);
-  analogWrite(motorEsquerdoPin2, velocityFactor);
+  analogWrite(motorEsquerdoPin2, velocityFactorLeft);
 }
 
 void motorDireitoRe() {
-  analogWrite(motorDireitoPin1, velocityFactor);
+  analogWrite(motorDireitoPin1, velocityFactorRight);
   digitalWrite(motorDireitoPin2, 0);
 }
 
 void motorEsquerdoRe() {
-  analogWrite(motorEsquerdoPin1, velocityFactor);
+  analogWrite(motorEsquerdoPin1, velocityFactorLeft);
   digitalWrite(motorEsquerdoPin2, 0);
 }
 
