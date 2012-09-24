@@ -1,23 +1,26 @@
 #include <Ultrasonic.h>
 
-#define echoPin 13
 #define trigPin 12
+#define echoPin 13
 
-const int botaoEsquerda = 4;
-const int botaoDireita = 2;
+#define motorDireitoPin1 5
+#define motorDireitoPin2 6
 
-int motorDireitoPin1 = 5;
-int motorDireitoPin2 = 6;
+#define motorEsquerdoPin1 9
+#define motorEsquerdoPin2 10
 
-int motorEsquerdoPin1 = 9;
-int motorEsquerdoPin2 = 10;
+#define ledPin 8
 
-int ldr = 0;
+#define ldrPin 0
+
+#define rightButton 2
+#define leftButton 4
+
 int theBegin = true;
-int velocityFactorLeft = 160;
-int velocityFactorRight = 200;
+const int velocityFactorLeft = 160;
+const int velocityFactorRight = 190;
 
-Ultrasonic distancia(12, 13);
+Ultrasonic ultrassonic(trigPin, echoPin);
 
 void setup() {
   Serial.begin(9600);
@@ -30,64 +33,61 @@ void setup() {
   pinMode(motorEsquerdoPin1, OUTPUT);
   pinMode(motorEsquerdoPin2, OUTPUT);
   
-  pinMode(botaoEsquerda, INPUT);
-  pinMode(botaoDireita, INPUT);
+  pinMode(ledPin, OUTPUT);
 }
 
 void loop() {
   if (theBegin) {
-    roboFrente();
+    blinkLed(10);
+    robotForward();
     theBegin = false;
-  }
- 
-  if (digitalRead(botaoDireita) == HIGH) {
-    Serial.println("Colisao laterial Direita");
-    roboReDireita();
-    delay(125);
-    roboFrente();
+    digitalWrite(ledPin, HIGH);
   }
   
-  if (digitalRead(botaoEsquerda) == HIGH) {
-    Serial.println("Colisao laterial Esquerda");
+  if (isRightColision()) {
+    Serial.println("Colisao laterial Direita");
+    robotBackward();
+    blinkLed(5);
     roboReEsquerda();
-    delay(125);
-    roboFrente();
-  } 
-
-  if (leLuminosidade() < 200) {
-    Serial.println("Luninosidade baixa detectada");
-    Serial.println("Afastando do escuro...");
-      roboRe();
-      delay(1000);
-    while(leLuminosidade() < 200) {
+    delay(250);
+    robotForward();
+  }
+  
+  if (isLeftColision()) {
+    Serial.println("Colisao laterial Direita");
+    robotBackward();
+    blinkLed(5);
+    roboReDireita();
+    delay(250);
+    robotForward();
+  }
+  
+  int distance = readDistance();
+  if (distance < 10 && distance != 0) {
+    robotBackward();
+    while(readDistance() < 20) {
+      //do nothing
+    }
+    roboReEsquerda();
+    delay(250);
+    robotForward();
+  }
+  
+  if (readLuminosity() < 200) {
+    robotBackward();
+    blinkLed(10);
+    digitalWrite(ledPin, HIGH);
+    while(readLuminosity() < 200) {
       roboReDireita();
     }
     roboReDireita();
-    delay(100);
-    roboFrente();
+    delay(250);
+    robotForward();
   }
-
-  int dist = leDistancia();
-  if (dist < 15 && dist != 0) {
-    Serial.println("Obstaculo detectado");
-    while(leDistancia() < 20) {
-      Serial.println("afastando do Obstaculo pela esquerda...");
-      roboRe();
-    }
-    roboReEsquerda();
-    delay(100);
-    roboFrente();
-  }
-}
-
-int leLuminosidade() {
-  int lum = analogRead(ldr);
-//  Serial.print("Luminosidade: ");
-//  Serial.println(lum);
-  return lum;
+  digitalWrite(ledPin, HIGH);
 }
   
-int leDistancia() {
+int readDistance() {
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
   
@@ -95,40 +95,59 @@ int leDistancia() {
   delayMicroseconds(10);
   
   digitalWrite(trigPin, LOW);
-  int cm = (distancia.Ranging(CM));
-//  Serial.print("Distancia em CM: ");
-//  Serial.println(cm);
+  int cm = (ultrassonic.Ranging(CM));
   return cm;
 }
 
-void roboFrente() {
-  motorDireitoFrente();
-  motorEsquerdoFrente();
-  delay(50);
+int readLuminosity() {
+  int lum = analogRead(ldrPin);
+  return lum;
 }
 
-void roboRe() {
+boolean isRightColision() {
+  return digitalRead(rightButton) == HIGH;
+}
+
+boolean isLeftColision() {
+  return digitalRead(leftButton) == HIGH;
+}
+
+void blinkLed(int cicles) {
+  for (int i = 0; i < cicles; i++) {
+    digitalWrite(ledPin, HIGH);
+    delay(50);
+    digitalWrite(ledPin, LOW);
+    delay(50);
+  }
+}
+
+void robotForward() {
+  robotStop();
+  delay(10);
+  motorDireitoFrente();
+  motorEsquerdoFrente();
+}
+
+void robotBackward() {
+  robotStop();
+  delay(10);
   motorDireitoRe();
   motorEsquerdoRe();
-  delay(50);
+}
+
+void robotStop() {
+  motorDireitoParado();
+  motorEsquerdoParado();
 }
 
 void roboReEsquerda() {
   motorDireitoFrente();
   motorEsquerdoRe();
-  delay(50);
 }
 
 void roboReDireita() {
   motorEsquerdoFrente();
   motorDireitoRe();
-  delay(50);
-}
-
-void roboParado() {
-  motorDireitoParado();
-  motorEsquerdoParado();
-  delay(50);
 }
 
 void motorDireitoFrente() {

@@ -14,7 +14,7 @@ http://www.webtronico.com
   5V - 1023
   X  - Y
 */
-int pinoSensor = 0; //pino que está ligado o terminal central do LM35 (porta analogica 0)
+int pinoSensor = 2; //pino que está ligado o terminal central do LM35 (porta analogica 0)
 int valorLido = 0; //valor lido na entrada analogica
 float temperatura = 0; //valorLido convertido para temperatura
 
