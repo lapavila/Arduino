@@ -11,7 +11,7 @@ void loop() {
     entrada = Serial.read();
     if (entrada == 'p') {
       digitalWrite(portao, HIGH);
-      delay(100);
+      delay(400);
       digitalWrite(portao, LOW);
     }
   }
