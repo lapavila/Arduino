@@ -1,0 +1,4 @@
+---
+serial_port: /dev/tty.usbserial*
+mcu: atmega328
+physical_reset: false

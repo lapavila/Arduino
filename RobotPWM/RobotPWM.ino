@@ -9,16 +9,21 @@
 #define motorEsquerdoPin1 9
 #define motorEsquerdoPin2 10
 
-#define ledPin 8
+#define ledPin 11
 
 #define ldrPin 0
 
-#define rightButton 2
-#define leftButton 4
+//#define rightButton 7
+//#define leftButton 8
+
+//#define rightIr 2
+//#define leftIr 3
 
 int theBegin = true;
 const int velocityFactorLeft = 160;
 const int velocityFactorRight = 190;
+
+const int backwardTime = 700;
 
 Ultrasonic ultrassonic(trigPin, echoPin);
 
@@ -34,6 +39,9 @@ void setup() {
   pinMode(motorEsquerdoPin2, OUTPUT);
   
   pinMode(ledPin, OUTPUT);
+  
+//  pinMode(rightIr, INPUT); 
+//  pinMode(leftIr, INPUT);
 }
 
 void loop() {
@@ -44,37 +52,54 @@ void loop() {
     digitalWrite(ledPin, HIGH);
   }
   
+  verifyDistance();
+  
+  //verifyColision();
+  
+  //verifyLuminosity();
+  
+  digitalWrite(ledPin, HIGH);
+}
+
+////////////////////////
+////////////////////////
+void verifyDistance() {
+  int distance = readDistance();
+  Serial.print("Distancia: ");
+  Serial.println(distance);
+  if (distance < 20 && distance != 0) {
+    robotBackward(backwardTime);
+    robotLeft();
+    blinkLed(10);
+    robotForward();
+  }
+}
+
+////////////////////////
+////////////////////////
+void verifyColision() {
   if (isRightColision()) {
     Serial.println("Colisao laterial Direita");
-    robotBackward();
-    blinkLed(5);
-    roboReEsquerda();
-    delay(250);
+    robotBackward(backwardTime);
+    robotLeft();
+    blinkLed(10);
     robotForward();
   }
   
   if (isLeftColision()) {
-    Serial.println("Colisao laterial Direita");
-    robotBackward();
-    blinkLed(5);
-    roboReDireita();
-    delay(250);
+    Serial.println("Colisao laterial Esquerda");
+    robotBackward(backwardTime);
+    robotRight();
+    blinkLed(10);
     robotForward();
   }
-  
-  int distance = readDistance();
-  if (distance < 10 && distance != 0) {
-    robotBackward();
-    while(readDistance() < 20) {
-      //do nothing
-    }
-    roboReEsquerda();
-    delay(250);
-    robotForward();
-  }
-  
+}
+
+////////////////////////
+////////////////////////
+void verifyLuminosity() {
   if (readLuminosity() < 200) {
-    robotBackward();
+    robotBackward(backwardTime);
     blinkLed(10);
     digitalWrite(ledPin, HIGH);
     while(readLuminosity() < 200) {
@@ -84,19 +109,23 @@ void loop() {
     delay(250);
     robotForward();
   }
-  digitalWrite(ledPin, HIGH);
 }
   
 int readDistance() {
-  digitalWrite(trigPin, LOW);
-  delayMicroseconds(2);
-  
-  digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10);
-  
-  digitalWrite(trigPin, LOW);
-  int cm = (ultrassonic.Ranging(CM));
+  int cm = ultrassonic.Ranging(CM);
+  Serial.print("Distance: ");
+  Serial.println(cm);
   return cm;
+}
+
+int readIr(int theIr) {
+  int ir = analogRead(theIr); 
+  int BR = map(ir, 0, 1023, 300, 0);
+  return BR;
+}
+
+boolean isButtonClicked(int theButton) {
+  return digitalRead(theButton) == LOW;
 }
 
 int readLuminosity() {
@@ -105,39 +134,50 @@ int readLuminosity() {
 }
 
 boolean isRightColision() {
-  return digitalRead(rightButton) == HIGH;
+  return (isButtonClicked(rightButton));
 }
 
 boolean isLeftColision() {
-  return digitalRead(leftButton) == HIGH;
+  return (isButtonClicked(leftButton));
 }
 
 void blinkLed(int cicles) {
   for (int i = 0; i < cicles; i++) {
     digitalWrite(ledPin, HIGH);
-    delay(50);
+    delay(25);
     digitalWrite(ledPin, LOW);
-    delay(50);
+    delay(25);
   }
 }
 
 void robotForward() {
-  robotStop();
-  delay(10);
   motorDireitoFrente();
   motorEsquerdoFrente();
 }
 
-void robotBackward() {
-  robotStop();
-  delay(10);
+void robotBackward(int time) {
+  robotStop(500);
   motorDireitoRe();
   motorEsquerdoRe();
+  delay(time);
 }
 
-void robotStop() {
+void robotStop(int timeToStop) {
   motorDireitoParado();
   motorEsquerdoParado();
+  if (timeToStop > 0) {
+    delay(timeToStop);
+  }
+}
+
+void robotLeft() {
+  motorDireitoFrente();
+  motorEsquerdoParado();
+}
+
+void robotRight() {
+  motorEsquerdoFrente();
+  motorDireitoParado();
 }
 
 void roboReEsquerda() {
@@ -151,31 +191,31 @@ void roboReDireita() {
 }
 
 void motorDireitoFrente() {
-  digitalWrite(motorDireitoPin1, 0);
+  analogWrite(motorDireitoPin1, 0);
   analogWrite(motorDireitoPin2, velocityFactorRight);
 }
 
 void motorEsquerdoFrente() {
-  digitalWrite(motorEsquerdoPin1, 0);
+  analogWrite(motorEsquerdoPin1, 0);
   analogWrite(motorEsquerdoPin2, velocityFactorLeft);
 }
 
 void motorDireitoRe() {
   analogWrite(motorDireitoPin1, velocityFactorRight);
-  digitalWrite(motorDireitoPin2, 0);
+  analogWrite(motorDireitoPin2, 0);
 }
 
 void motorEsquerdoRe() {
   analogWrite(motorEsquerdoPin1, velocityFactorLeft);
-  digitalWrite(motorEsquerdoPin2, 0);
+  analogWrite(motorEsquerdoPin2, 0);
 }
 
 void motorDireitoParado() {
-  digitalWrite(motorDireitoPin1, 0);
-  digitalWrite(motorDireitoPin2, 0);
+  analogWrite(motorDireitoPin1, 0);
+  analogWrite(motorDireitoPin2, 0);
 }
 
 void motorEsquerdoParado() {
-  digitalWrite(motorEsquerdoPin1, 0);
-  digitalWrite(motorEsquerdoPin2, 0);
+  analogWrite(motorEsquerdoPin1, 0);
+  analogWrite(motorEsquerdoPin2, 0);
 }
