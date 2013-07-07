@@ -1,5 +1,5 @@
-const int botaoEsquerda = 8;
-const int botaoDireita = 7;
+const int botaoEsquerda = 10;
+const int botaoDireita = 9;
 
 void setup() {
   pinMode(botaoEsquerda, INPUT);
@@ -9,12 +9,14 @@ void setup() {
 
 void loop() {
   if (digitalRead(botaoEsquerda) == LOW && digitalRead(botaoDireita) == LOW) {
-    
+    Serial.println("10 = 0 e 7 = 0");    
   } else if (digitalRead(botaoEsquerda) == HIGH && digitalRead(botaoDireita) == HIGH) {
-    Serial.println("botaoEsquerda + botaoDireita");
+    Serial.println("10 = 1 e 7 = 1");
   } else if (digitalRead(botaoEsquerda) == HIGH && digitalRead(botaoDireita) == LOW) {
-    Serial.println("botaoEsquerda");
+    Serial.println("10 = 1 e 7 = 0");
   } else if (digitalRead(botaoEsquerda) == LOW && digitalRead(botaoDireita) == HIGH) {
-    Serial.println("botaoDireita");
+    Serial.println("10 = 0 e 7 = 1");
   }
+  
+  delay(500);
 }

@@ -4,15 +4,23 @@ void setup() {
   pinMode(11, OUTPUT); 
   pinMode(10, OUTPUT); 
   pinMode(9, OUTPUT); 
-  pinMode(8, OUTPUT); 
+  pinMode(8, OUTPUT);
+  pinMode(2, INPUT);
 }
 
 void loop() {
   if (Serial.available() > 0) {
-    int entrada = 61 - Serial.read();
-    Serial.println(entrada);
-    digitalWrite(entrada, HIGH);
-    delay(400);
-    digitalWrite(entrada, LOW);
+    int entrada = Serial.read();
+    if (entrada == 'q') {
+      Serial.println("ok");
+    } else if (entrada == 'p') {
+      Serial.println(digitalRead(2));
+    } else {
+      entrada = 61 - entrada;
+      Serial.println(entrada);
+      digitalWrite(entrada, HIGH);
+      delay(1000);
+      digitalWrite(entrada, LOW);
+    }
   }
 }

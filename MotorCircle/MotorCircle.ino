@@ -1,7 +1,9 @@
-int motor1Pin1 = 10;
-int motor1Pin2 = 11;
+int motor1Pin1 = 7;
+int motor1Pin2 = 8;
+
 int motor2Pin1 = 12;
 int motor2Pin2 = 13;
+
 int entrada = 0;
  
 void setup() {
